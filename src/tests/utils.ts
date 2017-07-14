@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as ts from 'typescript';
+import {isNumeric} from 'rxjs/util/isNumeric';
 
 export type Sources = {
   [name: string]: string
@@ -64,7 +65,7 @@ function extractErrors(emitResult: ts.EmitResult, program: ts.Program) {
   const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
   return allDiagnostics.map(diagnostic => {
     let prefix = '';
-    if (diagnostic.file) {
+    if (diagnostic.file && isNumeric(diagnostic.start)) {
       const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
       prefix = `${diagnostic.file.fileName} (${line + 1},${character + 1}): `;
     }
